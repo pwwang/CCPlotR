@@ -32,7 +32,7 @@ cc_circos <- function(cc_df, option = "A", n_top_ints = 15, exp_df = NULL, cell_
     stopifnot("'cc_df' must be a dataframe" = is(cc_df, "data.frame"))
     stopifnot("cc_df should contain columns named source, target, ligand, receptor and score. See `toy_data` for an example." = all(c('source', 'target', 'ligand', 'receptor', 'score') %in% colnames(cc_df)))
     stopifnot("option must be either 'A', 'B', 'C'" = option %in% c('A', 'B', 'C'))
-    
+
     target <- score <- ligand <- receptor <- source_lig <- target_rec <- cell_type <- gene <- cell_gene <- NULL
     if (option == "A") {
         input_df <- cc_df %>%
@@ -41,7 +41,7 @@ cc_circos <- function(cc_df, option = "A", n_top_ints = 15, exp_df = NULL, cell_
             tally()
         if (is.null(cell_cols)) {
             cell_cols <- setNames(paletteMartin(n = length(unique(c(input_df$source, input_df$target)))), unique(c(input_df$source, input_df$target)))
-        } 
+        }
         circlize_plot <- function() {
             par(cex = cex)
             chordDiagram(input_df,
@@ -99,7 +99,7 @@ cc_circos <- function(cc_df, option = "A", n_top_ints = 15, exp_df = NULL, cell_
                 )
             }, bg.border = NA)
             for (l in unique(str_extract(segments, "[^|]+"))) {
-                highlight.sector(segments[str_detect(segments, paste0("^", l))], track.index = 2, col = cell_cols[l])
+                highlight.sector(segments[str_detect(segments, paste0("^", str_escape(l)))], track.index = 2, col = cell_cols[l])
             }
             if (show_legend == TRUE) {
                 draw(lgd, just = c("left", "bottom"), x = unit(5, "mm"), y = unit(5, "mm"))
@@ -109,7 +109,7 @@ cc_circos <- function(cc_df, option = "A", n_top_ints = 15, exp_df = NULL, cell_
     } else if (option == "C") {
         stopifnot("'exp_df' must be a dataframe" = is(exp_df, "data.frame"))
         stopifnot("exp_df should contain columns named cell_type, gene and mean_exp. See `toy_exp` for an example." = all(c('cell_type', 'gene', 'mean_exp') %in% colnames(exp_df)))
-        
+
         input_df <- cc_df %>%
             slice_max(order_by = score, n = n_top_ints) %>%
             mutate(
@@ -167,7 +167,7 @@ cc_circos <- function(cc_df, option = "A", n_top_ints = 15, exp_df = NULL, cell_
                 )
             }, bg.border = NA)
             for (l in unique(str_extract(segments, "[^|]+"))) {
-                highlight.sector(segments[str_detect(segments, paste0("^", l))], track.index = 2, col = cell_cols[l])
+                highlight.sector(segments[str_detect(segments, paste0("^", str_escape(l)))], track.index = 2, col = cell_cols[l])
             }
             circos.track(track.index = 3, panel.fun = function(x, y) {
                 circos.rect(CELL_META$xlim[1], CELL_META$ylim[1], CELL_META$xlim[2], CELL_META$ylim[2],
@@ -179,6 +179,6 @@ cc_circos <- function(cc_df, option = "A", n_top_ints = 15, exp_df = NULL, cell_
             }
             circos.clear()
         }
-    } 
+    }
     circlize_plot()
 }
